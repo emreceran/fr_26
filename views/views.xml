@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_saha_inherit" model="ir.ui.view">
+        <field name="name">res.partner.form.saha.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            
+            <xpath expr="//form" position="replace">
+                <form string="Saha Müşterisi">
+                    <sheet>
+                        <field name="image_1920" widget="image" class="oe_avatar" options="{&quot;preview_image&quot;: &quot;image_128&quot;}"/>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Ad Soyad / Kurum Adı"/>
+                            </h1>
+                        </div>
+
+                        <group>
+                               
+                            
+                            <group string="Kurumsal Detaylar">
+                                <field name="sicil_no"/>
+                                <field name="kimlik_no"/>
+                                <field name="mobile" widget="phone"/>
+                                <field name="bolge_adi"/>
+                                <field name="ozel_il_id"/>
+                            </group>
+                        </group>
+
+                        <group string="Saha Durumu" style="background-color: #f0f4f7; padding: 10px; border-radius: 5px;">
+                            <group>
+                                <field name="taraf" placeholder="Bir taraf seçiniz..." options="{'no_create': True, 'no_open': True}"/>
+                            </group>
+                            <group>
+                                <field name="sorumlu_id" widget="many2one_avatar_user"/>
+                                <field name="etiketleyen_id" readonly="1" widget="many2one_avatar_user"/>
+                            </group>
+                        </group>
+
+                    </sheet>
+                </form>
+            </xpath>
+
+        </field>
+    </record>
+
+    </odoo>

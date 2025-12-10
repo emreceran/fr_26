@@ -1,0 +1,22 @@
+# Python derleme dosyaları
+__pycache__/
+*.py[cod]
+
+# IDE ve editör dosyaları
+.vscode/
+.idea/
+
+# Odoo cache ve log dosyaları
+*.log
+*.tmp
+
+# Sistem dosyaları
+.DS_Store
+Thumbs.db
+
+# Paket klasörleri
+*.egg-info/
+*.eggs/
+dist/
+build/
+

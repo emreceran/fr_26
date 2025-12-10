@@ -8,7 +8,13 @@ class SahaApi(http.Controller):
     # 1. LOGIN (GİRİŞ)
     # -------------------------------------------------------------------------
     @http.route('/api/login', type='json', auth='public', methods=['POST'], csrf=False)
-    def login(self, db, login, password):
+    def login(self, **kwargs):
+        db = kwargs.get("db")
+        login = kwargs.get("login")
+        password = kwargs.get("password")
+        print(db)
+        print(login)
+        print(password)
         try:
             # Odoo standart login yapısı yerine, senin sisteminin istediği
             # 'credential' sözlük yapısını kullanıyoruz.
@@ -37,7 +43,8 @@ class SahaApi(http.Controller):
     # 2. REHBER SORGULA (DETAYLI BİLGİ DÖNER)
     # -------------------------------------------------------------------------
     @http.route('/api/rehber_sorgula', type='json', auth='user', methods=['POST'], csrf=False)
-    def rehber_sorgula(self, telefon_listesi):
+    def rehber_sorgula(self, **kwargs):
+        telefon_listesi = kwargs.get("telefon_listesi")
         """
         Input: ["0555...", "0532..."]
         Output: Eşleşen kayıtların TÜM detayları (Sicil, Kurum, Taraf vb.)
@@ -90,7 +97,10 @@ class SahaApi(http.Controller):
     # 3. ETİKETLE (KİMİN YAPTIĞINI KAYDEDER)
     # -------------------------------------------------------------------------
     @http.route('/api/etiketle', type='json', auth='user', methods=['POST'], csrf=False)
-    def etiketle(self, customer_id, renk):
+    def etiketle(self, **kwargs):
+
+        customer_id = kwargs.get("customer_id")
+        renk = kwargs.get("renk")
         try:
             # 1. Müşteriyi bul
             partner = request.env['res.partner'].browse(int(customer_id))

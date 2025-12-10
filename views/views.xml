@@ -45,4 +45,43 @@
         </field>
     </record>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <record id="view_saha_il_tree" model="ir.ui.view">
+        <field name="name">saha.il.list</field>
+        <field name="model">saha.il</field>
+        <field name="arch" type="xml">
+            <list string="İller" editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_saha_il" model="ir.actions.act_window">
+        <field name="name">İller</field>
+        <field name="res_model">saha.il</field>
+        <field name="view_mode">list,form</field> </record>
+
+
+    <menuitem id="menu_saha_il_contact" 
+              name="İller" 
+              parent="contacts.res_partner_menu_config" 
+              action="action_saha_il" 
+              sequence="10"/>
+
     </odoo>

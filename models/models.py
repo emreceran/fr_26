@@ -26,7 +26,7 @@ class ResPartner(models.Model):
         ('kirmizi', 'Kırmızı'),
         ('mavi', 'Mavi'),
         ('yesil', 'Yeşil'),
-        ('beyaz', 'Beyaz (Tarafsız)'), # Yeni seçeneğimiz
+        ('beyaz', 'Beyaz'), # Yeni seçeneğimiz
     ], string='Taraf Seçimi')
 
     sicil_no = fields.Char(string='Sicil No', index=True)
@@ -34,8 +34,8 @@ class ResPartner(models.Model):
     kurum_adi = fields.Char(string='Kurum Adı')
     bolge_adi = fields.Selection(
         selection=[
-            ('ankara', 'Ankara'),
-            ('istanbul', 'İstanbul')
+            ('ankara', '1. Bölge'),
+            ('istanbul', '2. Bölge')
         ],
         string='Bölge',
         copy=False

@@ -44,6 +44,23 @@
         </field>
     </record>
 
+    <record id="view_partner_list_inherit_bolge" model="ir.ui.view">
+        <field name="name">res.partner.list.inherit.bolge</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='email']" position="after">
+                <field name="bolge_adi"
+                       optional="show"
+                       widget="badge"
+                       decoration-info="bolge_adi == 'istanbul'"
+                       decoration-success="bolge_adi == 'ankara'"/>
+            </xpath>
+
+        </field>
+    </record>
+
     <record id="view_res_partner_filter_inherit_saha" model="ir.ui.view">
         <field name="name">res.partner.select.inherit.saha</field>
         <field name="model">res.partner</field>

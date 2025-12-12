@@ -39,6 +39,6 @@ class ResPartner(models.Model):
         ],
         string='Bölge',
         copy=False
-        # default değeri vermiyoruz, böylece boş gelebilir.
+
     )
     ozel_il_id = fields.Many2one('saha.il', string='Şehir (İl)', help="Plaka kodlu özel il seçimi")

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
     <record id="view_partner_form_saha_inherit" model="ir.ui.view">
         <field name="name">res.partner.form.saha.inherit</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
-            
+
             <xpath expr="//form" position="replace">
                 <form string="Saha Müşterisi">
                     <sheet>
@@ -17,8 +18,6 @@
                         </div>
 
                         <group>
-                               
-                            
                             <group string="Kurumsal Detaylar">
                                 <field name="sicil_no"/>
                                 <field name="kimlik_no"/>
@@ -45,20 +44,31 @@
         </field>
     </record>
 
+    <record id="view_res_partner_filter_inherit_saha" model="ir.ui.view">
+        <field name="name">res.partner.select.inherit.saha</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='type_person']" position="before">
 
+                <filter string="Ankara Müşterileri"
+                        name="filter_ankara"
+                        domain="[('bolge_adi', '=', 'ankara')]"/>
 
+                <filter string="İstanbul Müşterileri"
+                        name="filter_istanbul"
+                        domain="[('bolge_adi', '=', 'istanbul')]"/>
 
+                <separator/>
+            </xpath>
 
-
-
-
-
-
-
-
-
-
-
+            <xpath expr="//group" position="inside">
+                <filter string="Bölgeye Göre"
+                        name="group_by_bolge"
+                        context="{'group_by': 'bolge_adi'}"/>
+            </xpath>
+        </field>
+    </record>
 
 
     <record id="view_saha_il_tree" model="ir.ui.view">
@@ -75,13 +85,13 @@
     <record id="action_saha_il" model="ir.actions.act_window">
         <field name="name">İller</field>
         <field name="res_model">saha.il</field>
-        <field name="view_mode">list,form</field> </record>
+        <field name="view_mode">list,form</field>
+    </record>
 
-
-    <menuitem id="menu_saha_il_contact" 
-              name="İller" 
-              parent="contacts.res_partner_menu_config" 
-              action="action_saha_il" 
+    <menuitem id="menu_saha_il_contact"
+              name="İller"
+              parent="contacts.res_partner_menu_config"
+              action="action_saha_il"
               sequence="10"/>
 
-    </odoo>
+</odoo>

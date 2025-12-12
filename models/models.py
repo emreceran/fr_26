@@ -26,7 +26,7 @@ class ResPartner(models.Model):
         ('kirmizi', 'Kırmızı'),
         ('mavi', 'Mavi'),
         ('yesil', 'Yeşil'),
-        ('beyaz', 'Beyaz'), # Yeni seçeneğimiz
+        ('beyaz', 'Beyaz (Tarafsız)'), # Yeni seçeneğimiz
     ], string='Taraf Seçimi')
 
     sicil_no = fields.Char(string='Sicil No', index=True)
@@ -34,11 +34,11 @@ class ResPartner(models.Model):
     kurum_adi = fields.Char(string='Kurum Adı')
     bolge_adi = fields.Selection(
         selection=[
-            ('ankara', '1. Bölge'),
-            ('istanbul', '2. Bölge')
+            ('ankara', 'Ankara'),
+            ('istanbul', 'İstanbul')
         ],
         string='Bölge',
         copy=False
-
+        # default değeri vermiyoruz, böylece boş gelebilir.
     )
     ozel_il_id = fields.Many2one('saha.il', string='Şehir (İl)', help="Plaka kodlu özel il seçimi")

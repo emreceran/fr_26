@@ -21,6 +21,7 @@
                             <group string="Kurumsal Detaylar">
                                 <field name="sicil_no"/>
                                 <field name="kimlik_no"/>
+                                <field name="phone_hash"/>
                                 <field name="mobile" widget="phone"/>
                                 <field name="bolge_adi"/>
                                 <field name="ozel_il_id"/>

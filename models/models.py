@@ -29,6 +29,10 @@ class ResPartner(models.Model):
         ('beyaz', 'Beyaz (Tarafsız)'), # Yeni seçeneğimiz
     ], string='Taraf Seçimi')
 
+    # --- YENİ EKLENEN HASH ALANI ---
+    # index=True yaptık ki arama performansı yüksek olsun
+    phone_hash = fields.Char(string='Telefon Hash (SHA256)', index=True, copy=False)
+
     sicil_no = fields.Char(string='Sicil No', index=True)
     kimlik_no = fields.Char(string='TC Kimlik No')
     kurum_adi = fields.Char(string='Kurum Adı')
@@ -41,4 +45,4 @@ class ResPartner(models.Model):
         copy=False
         # default değeri vermiyoruz, böylece boş gelebilir.
     )
-    ozel_il_id = fields.Many2one('saha.il', string='Şehir (İl)', help="Plaka kodlu özel il seçimi")
+    ozel_il_id = fields.Char(string='Şehir (İl)', help="Plaka kodlu özel il seçimi")

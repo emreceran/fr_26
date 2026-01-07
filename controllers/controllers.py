@@ -11,25 +11,15 @@ class SahaApi(http.Controller):
     # YARDIMCI FONKSİYON
     # -------------------------------------------------------------------------
     def _clean_and_hash(self, phone):
-        """
-        Telefonu temizler ve hashler.
-        """
         if not phone:
             return None
-
         clean_str = re.sub(r'\D', '', str(phone))
-
-        # Başta 90 varsa sil
         if clean_str.startswith('90') and len(clean_str) > 10:
             clean_str = clean_str[2:]
-
-        # Başta 0 varsa sil
         if clean_str.startswith('0'):
             clean_str = clean_str[1:]
-
         if not clean_str:
             return None
-
         return hashlib.sha256(clean_str.encode('utf-8')).hexdigest()
 
     # -------------------------------------------------------------------------
@@ -50,18 +40,14 @@ class SahaApi(http.Controller):
         return {'status': 'error', 'message': 'Kullanici adi veya sifre hatali.'}
 
     # -------------------------------------------------------------------------
-    # 2. REHBER SORGULA (ORİJİNAL NUMARA DÖNEN VERSİYON)
+    # 2. REHBER SORGULA
     # -------------------------------------------------------------------------
     @http.route('/api/rehber_sorgula', type='json', auth='user', methods=['POST'], csrf=False)
     def rehber_sorgula(self, **kwargs):
-        print("\n\n--- REHBER SORGULA BAŞLADI (YENİ KOD) ---")  # <--- KODUN GÜNCELLENDİĞİNİ BURADAN ANLAYACAĞIZ
-
         telefon_listesi = kwargs.get("telefon_listesi")
-
         if not telefon_listesi or not isinstance(telefon_listesi, list):
             return {'status': 'error', 'message': 'Telefon listesi gonderilmedi.'}
 
-        # 1. Hash Haritası Oluştur
         hash_map = {}
         aranacak_hashler = []
 
@@ -69,43 +55,44 @@ class SahaApi(http.Controller):
             hashed_val = self._clean_and_hash(tel)
             if hashed_val:
                 aranacak_hashler.append(hashed_val)
-                # Hash -> Orijinal Numara eşleşmesi
                 hash_map[hashed_val] = tel
-
-        print(f"DEBUG: Hesaplanan Hash Sayisi: {len(aranacak_hashler)}")
 
         if not aranacak_hashler:
             return {'status': 'success', 'count': 0, 'data': []}
 
-        # 2. Veritabanında Ara
         domain = [('phone_hash', 'in', aranacak_hashler)]
-
         fields_to_read = [
             'id', 'name', 'phone_hash', 'taraf',
             'sicil_no', 'kimlik_no', 'kurum_adi',
-            'bolge_adi', 'sorumlu_id', 'ozel_il_id'
+            'bolge_adi', 'sorumlu_id', 'ozel_il_id',
+            'rehberinde_olan_user_ids'
         ]
 
         try:
-            contacts = request.env['res.partner'].search_read(domain, fields_to_read)
-        except ValueError:
-            return {'status': 'error', 'message': 'phone_hash alani bulunamadi.'}
+            # Partners recordset'ini alıyoruz
+            partners = request.env['res.partner'].search(domain)
+            current_user_id = request.env.user.id
 
-        # 3. Sonuçları Eşleştir
+            # M2M Güncelleme: Sadece listede olmayan kullanıcıyı ekle
+            for partner in partners:
+                if current_user_id not in partner.rehberinde_olan_user_ids.ids:
+                    partner.write({
+                        'rehberinde_olan_user_ids': [(4, current_user_id, 0)]
+                    })
+
+            # Güncel veriyi oku
+            contacts = partners.read(fields_to_read)
+        except Exception as e:
+            return {'status': 'error', 'message': str(e)}
+
         bulunanlar = []
         for c in contacts:
             db_hash = c['phone_hash']
-
-            # Hash haritasından orijinal numarayı çek
             orijinal_tel = hash_map.get(db_hash, "Bilinmiyor")
-
-            # DEBUG: Eşleşme kontrolü
-            # print(f"DEBUG: DB Hash: {db_hash[:10]}... -> Tel: {orijinal_tel}")
-
             bulunanlar.append({
                 'id': c['id'],
                 'name': c['name'],
-                'telefon': orijinal_tel,  # <--- İŞTE BURASI: Orijinal numara burada
+                'telefon': orijinal_tel,
                 'hash': db_hash,
                 'taraf': c['taraf'] or False,
                 'sicil_no': c['sicil_no'] or "",
@@ -116,25 +103,42 @@ class SahaApi(http.Controller):
                 'sehir': c['ozel_il_id'] or ""
             })
 
-        print("--- REHBER SORGULA BİTTİ ---\n\n")
-        return {
-            'status': 'success',
-            'count': len(bulunanlar),
-            'data': bulunanlar
-        }
+        return {'status': 'success', 'count': len(bulunanlar), 'data': bulunanlar}
 
     # -------------------------------------------------------------------------
-    # 3. ETİKETLE
+    # 3. ETİKETLE (YETKİ KONTROLLÜ)
     # -------------------------------------------------------------------------
     @http.route('/api/etiketle', type='json', auth='user', methods=['POST'], csrf=False)
     def etiketle(self, **kwargs):
         customer_id = kwargs.get("customer_id")
         renk = kwargs.get("renk")
+        user = request.env.user
+
         try:
             partner = request.env['res.partner'].browse(int(customer_id))
-            if partner.exists() and renk in ['kirmizi', 'mavi', 'yesil', 'beyaz']:
-                partner.write({'taraf': renk, 'etiketleyen_id': request.env.user.id})
+            if not partner.exists():
+                return {'status': 'error', 'message': 'Müşteri bulunamadı.'}
+
+            # --- YETKİ KONTROLÜ ---
+            # Eğer halihazırda bir taraf seçilmişse (boş değilse)
+            if partner.taraf:
+                # Kullanıcı 'Etiket Değiştirme' grubunda mı?
+                # NOT: 'fr_26' kısmını manifest'teki modül adınla aynı olduğundan emin ol.
+                if not user.has_group('fr_26.group_saha_etiket_degistirici'):
+                    return {
+                        'status': 'error',
+                        'message': 'Bu müşteri zaten etiketlenmiş. Değiştirmek için yetkiniz yok.'
+                    }
+
+            # Taraf boşsa veya kullanıcı yetkiliyse güncelleme yap
+            if renk in ['kirmizi', 'mavi', 'yesil', 'beyaz']:
+                partner.write({
+                    'taraf': renk,
+                    'etiketleyen_id': user.id
+                })
                 return {'status': 'success', 'message': 'Guncellendi'}
+
         except Exception as e:
             return {'status': 'error', 'message': str(e)}
-        return {'status': 'error', 'message': 'Hata'}
+
+        return {'status': 'error', 'message': 'Hatalı parametre veya renk.'}

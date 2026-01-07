@@ -1,0 +1,6 @@
+<odoo>
+    <record id="group_saha_etiket_degistirici" model="res.groups">
+        <field name="name">Etiket Değiştirme Yetkisi</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+</odoo>

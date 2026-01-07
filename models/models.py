@@ -26,8 +26,16 @@ class ResPartner(models.Model):
         ('kirmizi', 'Kırmızı'),
         ('mavi', 'Mavi'),
         ('yesil', 'Yeşil'),
-        ('beyaz', 'Beyaz (Tarafsız)'), # Yeni seçeneğimiz
-    ], string='Taraf Seçimi')
+        ('beyaz', 'Beyaz (Tarafsız)'),
+    ], string='Taraf Seçimi', default=False)  # default=False kalsın, ama listede False olmasın
+
+    rehberinde_olan_user_ids = fields.Many2many(
+        'res.users',
+        'res_partner_rehber_users_rel',  # İlişki tablosu adı
+        'partner_id',
+        'user_id',
+        string='Rehberinde Olan Kullanıcılar'
+    )
 
     # --- YENİ EKLENEN HASH ALANI ---
     # index=True yaptık ki arama performansı yüksek olsun

@@ -105,45 +105,46 @@ class SahaApi(http.Controller):
 
         return {'status': 'success', 'count': len(bulunanlar), 'data': bulunanlar}
 
-        # -------------------------------------------------------------------------
-        # 3. ETİKETLE (YETKİ KONTROLLÜ & SIFIRLAMA DESTEKLİ)
-        # -------------------------------------------------------------------------
-        @http.route('/api/etiketle', type='json', auth='user', methods=['POST'], csrf=False)
-        def etiketle(self, **kwargs):
-            customer_id = kwargs.get("customer_id")
-            renk = kwargs.get("renk")  # API'den null gelirse bu None olur
-            user = request.env.user
+    # -------------------------------------------------------------------------
+    # 3. ETİKETLE (YETKİ KONTROLLÜ)
+    # -------------------------------------------------------------------------
+    @http.route('/api/etiketle', type='json', auth='user', methods=['POST'], csrf=False)
+    def etiketle(self, **kwargs):
+        customer_id = kwargs.get("customer_id")
+        renk = kwargs.get("renk")
+        user = request.env.user
 
-            try:
-                partner = request.env['res.partner'].browse(int(customer_id))
-                if not partner.exists():
-                    return {'status': 'error', 'message': 'Müşteri bulunamadı.'}
+        try:
+            partner = request.env['res.partner'].browse(int(customer_id))
+            if not partner.exists():
+                return {'status': 'error', 'message': 'Müşteri bulunamadı.'}
 
-                # --- YETKİ KONTROLÜ ---
-                # Eğer halihazırda bir taraf seçilmişse (boş değilse)
-                if partner.taraf:
-                    # Kullanıcı 'Etiket Değiştirme' grubunda mı?
-                    if not user.has_group('fr_26.group_saha_etiket_degistirici'):
-                        return {
-                            'status': 'error',
-                            'message': 'Bu müşteri zaten etiketlenmiş. Değiştirmek için yetkiniz yok.'
-                        }
+            # --- YETKİ KONTROLÜ ---
+            # Eğer halihazırda bir taraf seçilmişse (boş değilse)
+            if partner.taraf:
+                # Kullanıcı 'Etiket Değiştirme' grubunda mı?
+                # NOT: 'fr_26' kısmını manifest'teki modül adınla aynı olduğundan emin ol.
+                if not user.has_group('fr_26.group_saha_etiket_degistirici'):
+                    return {
+                        'status': 'error',
+                        'message': 'Bu müşteri zaten etiketlenmiş. Değiştirmek için yetkiniz yok.'
+                    }
 
-                # --- DEĞER KONTROLÜ ---
-                # Kabul ettiğimiz string değerler + None/False (sıfırlama için)
-                gecerli_renkler = ['kirmizi', 'mavi', 'yesil', 'beyaz']
+            # --- DEĞER KONTROLÜ ---
+            # Kabul ettiğimiz string değerler + None/False (sıfırlama için)
+            gecerli_renkler = ['kirmizi', 'mavi', 'yesil', 'beyaz']
 
-                if renk in gecerli_renkler or renk in [None, False]:
-                    # Eğer renk listede varsa onu yaz, yoksa (None/False ise) False yazarak alanı boşalt
-                    yazilacak_deger = renk if renk in gecerli_renkler else False
+            if renk in gecerli_renkler or renk in [None, False]:
+                # Eğer renk listede varsa onu yaz, yoksa (None/False ise) False yazarak alanı boşalt
+                yazilacak_deger = renk if renk in gecerli_renkler else False
 
-                    partner.write({
-                        'taraf': yazilacak_deger,
-                        'etiketleyen_id': user.id
-                    })
-                    return {'status': 'success', 'message': 'Guncellendi'}
-                else:
-                    return {'status': 'error', 'message': 'Hatalı renk parametresi.'}
+                partner.write({
+                    'taraf': yazilacak_deger,
+                    'etiketleyen_id': user.id
+                })
+                return {'status': 'success', 'message': 'Guncellendi'}
+            else:
+                return {'status': 'error', 'message': 'Hatalı renk parametresi.'}
 
-            except Exception as e:
-                return {'status': 'error', 'message': str(e)}
+        except Exception as e:
+            return {'status': 'error', 'message': str(e)}

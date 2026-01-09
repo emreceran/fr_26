@@ -23,21 +23,88 @@ class SahaApi(http.Controller):
         return hashlib.sha256(clean_str.encode('utf-8')).hexdigest()
 
     # -------------------------------------------------------------------------
-    # 1. LOGIN
+    # 1. LOGIN (CİHAZ KONTROLLÜ)
     # -------------------------------------------------------------------------
     @http.route('/api/login', type='json', auth='public', methods=['POST'], csrf=False)
     def login(self, **kwargs):
         db = kwargs.get("db")
         login = kwargs.get("login")
         password = kwargs.get("password")
+        device_id = kwargs.get("device_id")
+
+        if not device_id:
+            return {'status': 'error', 'message': 'Cihaz ID bilgisi gönderilmedi.'}
+
         try:
-            uid = request.session.authenticate(db, {'login': login, 'password': password, 'type': 'password'})
+            # Odoo 18'de kimlik doğrulama sonucu bir dict döner
+            auth_result = request.session.authenticate(db, {
+                'login': login,
+                'password': password,
+                'type': 'password'
+            })
+
+            # --- KRİTİK DÜZELTME BURASI ---
+            # Eğer sonuç bir sözlükse içinden 'uid' al, değilse sonucun kendisini uid kabul et
+            if isinstance(auth_result, dict):
+                uid = auth_result.get('uid')
+            else:
+                uid = auth_result
+
             if uid:
-                return {'status': 'success', 'session_id': request.session.sid, 'user_id': uid,
-                        'message': 'Giris Basarili'}
-        except Exception:
-            pass
-        return {'status': 'error', 'message': 'Kullanici adi veya sifre hatali.'}
+                # sudo() ile yetki aşımı yaparak kullanıcıyı çekiyoruz
+                user = request.env['res.users'].sudo().browse(uid)
+
+                # Cihaz ID kontrolü
+                if not user.saha_device_id:
+                    # İlk giriş: Cihazı bu kullanıcıya kilitle
+                    user.write({'saha_device_id': device_id})
+                    return {
+                        'status': 'success',
+                        'session_id': request.session.sid,
+                        'user_id': uid,
+                        'message': 'Cihaz başarıyla tanımlandı ve giriş yapıldı.'
+                    }
+
+                elif user.saha_device_id == device_id:
+                    # Cihaz eşleşiyor
+                    return {
+                        'status': 'success',
+                        'session_id': request.session.sid,
+                        'user_id': uid,
+                        'message': 'Giriş Başarılı'
+                    }
+
+                else:
+                    # Cihaz eşleşmiyor: Oturumu kapat
+                    request.session.logout()
+                    return {
+                        'status': 'error',
+                        'message': 'Bu hesaba sadece tanımlı cihazınızdan giriş yapabilirsiniz.'
+                    }
+
+        except Exception as e:
+            # Hata detayını terminalde daha net görmek için:
+            print(f"\n--- GİRİŞ HATASI: {str(e)} ---\n")
+            return {'status': 'error', 'message': 'Kullanıcı adı veya şifre hatalı.'}
+
+        return {'status': 'error', 'message': 'Kullanıcı adı veya şifre hatalı.'}
+
+    # # -------------------------------------------------------------------------
+    # # 1. LOGIN
+    # # -------------------------------------------------------------------------
+    # @http.route('/api/login', type='json', auth='public', methods=['POST'], csrf=False)
+    # def login(self, **kwargs):
+    #     db = kwargs.get("db")
+    #     login = kwargs.get("login")
+    #     password = kwargs.get("password")
+    #     try:
+    #         uid = request.session.authenticate(db, {'login': login, 'password': password, 'type': 'password'})
+    #         if uid:
+    #             return {'status': 'success', 'session_id': request.session.sid, 'user_id': uid,
+    #                     'message': 'Giris Basarili'}
+    #     except Exception:
+    #         pass
+    #     return {'status': 'error', 'message': 'Kullanici adi veya sifre hatali.'}
 
     # -------------------------------------------------------------------------
     # 2. REHBER SORGULA

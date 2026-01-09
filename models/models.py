@@ -54,3 +54,11 @@ class ResPartner(models.Model):
         # default değeri vermiyoruz, böylece boş gelebilir.
     )
     ozel_il_id = fields.Char(string='Şehir (İl)', help="Plaka kodlu özel il seçimi")
+
+
+
+class ResUsers(models.Model):
+    _inherit = 'res.users'
+
+    # Kullanıcının kilitlendiği cihaz ID'si
+    saha_device_id = fields.Char(string='Tanımlı Cihaz ID', copy=False, index=True)

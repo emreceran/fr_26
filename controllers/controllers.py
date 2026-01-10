@@ -23,7 +23,7 @@ class SahaApi(http.Controller):
         return hashlib.sha256(clean_str.encode('utf-8')).hexdigest()
 
     # -------------------------------------------------------------------------
-    # 1. LOGIN (CİHAZ KONTROLLÜ)
+    # 1. LOGIN (CİHAZ KONTROLLÜ + YETKİ DÖNEN VERSİYON)
     # -------------------------------------------------------------------------
     @http.route('/api/login', type='json', auth='public', methods=['POST'], csrf=False)
     def login(self, **kwargs):
@@ -36,46 +36,50 @@ class SahaApi(http.Controller):
             return {'status': 'error', 'message': 'Cihaz ID bilgisi gönderilmedi.'}
 
         try:
-            # Odoo 18'de kimlik doğrulama sonucu bir dict döner
+            # Odoo 18 Kimlik Doğrulama
             auth_result = request.session.authenticate(db, {
                 'login': login,
                 'password': password,
                 'type': 'password'
             })
 
-            # --- KRİTİK DÜZELTME BURASI ---
-            # Eğer sonuç bir sözlükse içinden 'uid' al, değilse sonucun kendisini uid kabul et
+            # Odoo 18 Singleton hatasını önlemek için uid kontrolü
             if isinstance(auth_result, dict):
                 uid = auth_result.get('uid')
             else:
                 uid = auth_result
 
             if uid:
-                # sudo() ile yetki aşımı yaparak kullanıcıyı çekiyoruz
                 user = request.env['res.users'].sudo().browse(uid)
 
-                # Cihaz ID kontrolü
+                # 1. Yetki Kontrolü (Grup ID: fr_26.group_saha_etiket_degistirici)
+                # Kullanıcı bu gruba dahilse admin: true dönecek
+                is_admin = user.has_group('fr_26.group_saha_etiket_degistirici')
+
+                # 2. Cihaz ID Kontrolü
                 if not user.saha_device_id:
-                    # İlk giriş: Cihazı bu kullanıcıya kilitle
+                    # İlk giriş: Cihazı kilitle
                     user.write({'saha_device_id': device_id})
                     return {
                         'status': 'success',
                         'session_id': request.session.sid,
                         'user_id': uid,
+                        'admin': is_admin,  # Yetki bilgisini dönüyoruz
                         'message': 'Cihaz başarıyla tanımlandı ve giriş yapıldı.'
                     }
 
                 elif user.saha_device_id == device_id:
-                    # Cihaz eşleşiyor
+                    # Tanımlı cihaz
                     return {
                         'status': 'success',
                         'session_id': request.session.sid,
                         'user_id': uid,
+                        'admin': is_admin,  # Yetki bilgisini dönüyoruz
                         'message': 'Giriş Başarılı'
                     }
 
                 else:
-                    # Cihaz eşleşmiyor: Oturumu kapat
+                    # Farklı cihaz
                     request.session.logout()
                     return {
                         'status': 'error',
@@ -83,12 +87,9 @@ class SahaApi(http.Controller):
                     }
 
         except Exception as e:
-            # Hata detayını terminalde daha net görmek için:
-            print(f"\n--- GİRİŞ HATASI: {str(e)} ---\n")
             return {'status': 'error', 'message': 'Kullanıcı adı veya şifre hatalı.'}
 
         return {'status': 'error', 'message': 'Kullanıcı adı veya şifre hatalı.'}
-
     # # -------------------------------------------------------------------------
     # # 1. LOGIN
     # # -------------------------------------------------------------------------

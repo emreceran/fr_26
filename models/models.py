@@ -27,7 +27,7 @@ class ResPartner(models.Model):
         ('mavi', 'Mavi'),
         ('yesil', 'Yeşil'),
         ('beyaz', 'Beyaz (Tarafsız)'),
-    ], string='Taraf Seçimi', default=False)  # default=False kalsın, ama listede False olmasın
+    ], string='Taraf Seçimi', default=False, tracking=True)  # default=False kalsın, ama listede False olmasın
 
     rehberinde_olan_user_ids = fields.Many2many(
         'res.users',

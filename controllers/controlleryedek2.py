@@ -98,7 +98,7 @@ class SahaApi(http.Controller):
             'mobile',
             'phone',
             'taraf',
-            'sicil_no',
+            'customer_id',
             'kimlik_no',
             'kurum_adi',
             'bolge_adi',
@@ -117,7 +117,7 @@ class SahaApi(http.Controller):
                 # Veritabanında numara açıksa döneriz, yoksa boş döner.
                 'telefon': c['mobile'] or c['phone'] or "",
                 'taraf': c['taraf'] or False,
-                'sicil_no': c['sicil_no'] or "",
+                'customer_id': c['customer_id'] or "",
                 'kimlik_no': c['kimlik_no'] or "",
                 'kurum': c['kurum_adi'] or "",
                 'bolge': c['bolge_adi'] or "",

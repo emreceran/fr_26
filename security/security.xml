@@ -3,4 +3,9 @@
         <field name="name">Etiket Değiştirme Yetkisi</field>
         <field name="category_id" ref="base.module_category_hidden"/>
     </record>
+
+    <record id="group_secret_data" model="res.groups">
+        <field name="name">Gizli Veri (Erişim Kapalı)</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
 </odoo>

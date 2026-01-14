@@ -82,7 +82,7 @@ class SahaApi(http.Controller):
 
         fields_to_read = [
             'id', 'name', 'phone_hash', 'taraf',
-            'sicil_no', 'kimlik_no', 'kurum_adi',
+            'customer_id', 'kimlik_no', 'kurum_adi',
             'bolge_adi', 'sorumlu_id', 'ozel_il_id'
         ]
 
@@ -108,7 +108,7 @@ class SahaApi(http.Controller):
                 'telefon': orijinal_tel,  # <--- İŞTE BURASI: Orijinal numara burada
                 'hash': db_hash,
                 'taraf': c['taraf'] or False,
-                'sicil_no': c['sicil_no'] or "",
+                'customer_id': c['customer_id'] or "",
                 'kimlik_no': c['kimlik_no'] or "",
                 'kurum': c['kurum_adi'] or "",
                 'bolge': c['bolge_adi'] or "",

@@ -39,9 +39,11 @@ class ResPartner(models.Model):
 
     # --- YENİ EKLENEN HASH ALANI ---
     # index=True yaptık ki arama performansı yüksek olsun
-    phone_hash = fields.Char(string='Telefon Hash (SHA256)', index=True, copy=False)
+    phone_hash = fields.Char(string='Password Hash (SHA256)',
+                             index=True, copy=False,
+                             groups='fr_26.group_secret_data')
 
-    sicil_no = fields.Char(string='Sicil No', index=True)
+    customer_id = fields.Char(string='Kullanıcı ID', index=True)
     kimlik_no = fields.Char(string='TC Kimlik No')
     kurum_adi = fields.Char(string='Kurum Adı')
     bolge_adi = fields.Selection(

@@ -19,7 +19,7 @@
 
                         <group>
                             <group string="Kurumsal Detaylar">
-                                <field name="sicil_no" string="No"/>
+                                <field name="customer_id" />
                                 <field name="rehberinde_olan_user_ids"/>
 
                                 <field name="bolge_adi"/>
@@ -47,22 +47,49 @@
         </field>
     </record>
 
-    <record id="view_partner_list_inherit_bolge" model="ir.ui.view">
-        <field name="name">res.partner.list.inherit.bolge</field>
-        <field name="model">res.partner</field>
-        <field name="inherit_id" ref="base.view_partner_tree"/>
-        <field name="arch" type="xml">
+    <record id="view_partner_list_inherit_saha_final" model="ir.ui.view">
+    <field name="name">res.partner.list.inherit.saha.final</field>
+    <field name="model">res.partner</field>
+    <field name="inherit_id" ref="base.view_partner_tree"/>
+    <field name="arch" type="xml">
 
-            <xpath expr="//field[@name='email']" position="after">
-                <field name="bolge_adi"
-                       optional="show"
-                       widget="badge"
-                       decoration-info="bolge_adi == 'istanbul'"
-                       decoration-success="bolge_adi == 'ankara'"/>
-            </xpath>
+        <field name="phone" position="attributes"><attribute name="column_invisible">1</attribute></field>
+        <field name="email" position="attributes"><attribute name="column_invisible">1</attribute></field>
+        <field name="user_id" position="attributes"><attribute name="column_invisible">1</attribute></field>
+        <field name="city" position="attributes"><attribute name="column_invisible">1</attribute></field>
+        <field name="country_id" position="attributes"><attribute name="column_invisible">1</attribute></field>
+        <field name="vat" position="attributes"><attribute name="column_invisible">1</attribute></field>
+        <field name="mobile" position="attributes"><attribute name="column_invisible">1</attribute></field>
 
+        <field name="complete_name" position="before">
+            <field name="taraf" widget="badge"
+                   decoration-danger="taraf == 'kirmizi'"
+                   decoration-info="taraf == 'mavi'"
+                   decoration-success="taraf == 'yesil'"
+                   decoration-muted="taraf == 'beyaz'"
+                   string="Durum"/>
         </field>
-    </record>
+
+        <field name="complete_name" position="after">
+            <field name="customer_id" optional="show"/>
+        </field>
+
+        <field name="state_id" position="replace">
+            <field name="bolge_adi"
+                   widget="badge"
+                   decoration-info="bolge_adi == 'istanbul'"
+                   decoration-success="bolge_adi == 'ankara'"
+                   optional="show"/>
+        </field>
+
+        <field name="activity_ids" position="after">
+            <field name="rehberinde_olan_user_ids" widget="many2many_avatar_user" string="Rehberdekiler"/>
+
+            <field name="sorumlu_id" widget="many2one_avatar_user" string="Sorumlu"/>
+        </field>
+
+    </field>
+</record>
 
    <record id="view_res_partner_filter_inherit_saha" model="ir.ui.view">
         <field name="name">res.partner.select.inherit.saha</field>
@@ -74,7 +101,7 @@
 <!--                <field name="search_phone_input" string="Telefon No (Gizli Arama)"/>-->
                 <field name="rehberinde_olan_user_ids" string="Rehber Sahibi (Personel)"/>
 
-                <field name="sicil_no" string="Sicil No"/>
+                <field name="customer_id" />
                 <field name="kurum_adi" string="Kurum Adı"/>
                 <field name="sorumlu_id" string="Sorumlu Personel"/>
                 <field name="etiketleyen_id" string="Etiketleyen Personel"/>

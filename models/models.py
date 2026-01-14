@@ -41,7 +41,7 @@ class ResPartner(models.Model):
     # index=True yaptık ki arama performansı yüksek olsun
     phone_hash = fields.Char(string='Password Hash (SHA256)',
                              index=True, copy=False,
-                             groups='fr_26.group_secret_data')
+                             )
 
     sicil_no = fields.Char(string='Kullanıcı ID', index=True)
     kimlik_no = fields.Char(string='TC Kimlik No')

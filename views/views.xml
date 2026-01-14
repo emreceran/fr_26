@@ -21,11 +21,9 @@
                             <group string="Kurumsal Detaylar">
                                 <field name="sicil_no" string="No"/>
                                 <field name="rehberinde_olan_user_ids"/>
-                                <!--                                <field name="kimlik_no"/>-->
-                                <field name="phone_hash" string="pass hash"/>
-                                <field name="mobile" widget="phone"/>
+
                                 <field name="bolge_adi"/>
-                                <field name="ozel_il_id"/>
+
                             </group>
                         </group>
 
@@ -66,24 +64,23 @@
         </field>
     </record>
 
-    <record id="view_res_partner_filter_inherit_saha" model="ir.ui.view">
+   <record id="view_res_partner_filter_inherit_saha" model="ir.ui.view">
         <field name="name">res.partner.select.inherit.saha</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_res_partner_filter"/>
         <field name="arch" type="xml">
 
             <xpath expr="//field[@name='name']" position="after">
+<!--                <field name="search_phone_input" string="Telefon No (Gizli Arama)"/>-->
                 <field name="rehberinde_olan_user_ids" string="Rehber Sahibi (Personel)"/>
 
                 <field name="sicil_no" string="Sicil No"/>
                 <field name="kurum_adi" string="Kurum Adı"/>
                 <field name="sorumlu_id" string="Sorumlu Personel"/>
                 <field name="etiketleyen_id" string="Etiketleyen Personel"/>
-                <field name="phone_hash" string="Tel Hash"/>
             </xpath>
 
             <xpath expr="//filter[@name='type_person']" position="before">
-
                 <filter string="Ankara Müşterileri" name="filter_ankara" domain="[('bolge_adi', '=', 'ankara')]"/>
                 <filter string="İstanbul Müşterileri" name="filter_istanbul" domain="[('bolge_adi', '=', 'istanbul')]"/>
                 <separator/>
@@ -91,11 +88,11 @@
                 <filter string="Kırmızı Liste" name="filter_kirmizi" domain="[('taraf', '=', 'kirmizi')]"/>
                 <filter string="Mavi Liste" name="filter_mavi" domain="[('taraf', '=', 'mavi')]"/>
                 <filter string="Yeşil Liste" name="filter_yesil" domain="[('taraf', '=', 'yesil')]"/>
-
                 <filter string="Tarafsız (Beyaz)" name="filter_beyaz" domain="[('taraf', '=', 'beyaz')]"/>
                 <filter string="Atanmamış (Seçimsiz)" name="filter_atanmamis" domain="[('taraf', '=', False)]"/>
                 <separator/>
 
+                <filter string="Herhangi Bir Rehberde Olanlar" name="filter_rehber_dolu" domain="[('rehberinde_olan_user_ids', '!=', False)]"/>
                 <filter string="Rehberimde Ekli Olanlar" name="filter_my_guide" domain="[('rehberinde_olan_user_ids', 'in', [uid])]"/>
                 <separator/>
 
@@ -107,10 +104,13 @@
             <xpath expr="//group" position="inside">
                 <filter string="Bölgeye Göre" name="group_by_bolge" context="{'group_by': 'bolge_adi'}"/>
                 <filter string="Taraf Durumuna Göre" name="group_by_taraf" context="{'group_by': 'taraf'}"/>
-                <filter string="Kuruma Göre" name="group_by_kurum" context="{'group_by': 'kurum_adi'}"/>
+<!--                <filter string="Kuruma Göre" name="group_by_kurum" context="{'group_by': 'kurum_adi'}"/>-->
                 <filter string="Sorumlu Personele Göre" name="group_by_sorumlu" context="{'group_by': 'sorumlu_id'}"/>
                 <filter string="Etiketleyen Personele Göre" name="group_by_etiketleyen" context="{'group_by': 'etiketleyen_id'}"/>
+
+                <filter string="Rehberinde Olan Personele Göre" name="group_by_rehber" context="{'group_by': 'rehberinde_olan_user_ids'}"/>
             </xpath>
+
         </field>
     </record>
 

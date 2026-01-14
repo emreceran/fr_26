@@ -43,7 +43,7 @@ class ResPartner(models.Model):
                              index=True, copy=False,
                              groups='fr_26.group_secret_data')
 
-    customer_id = fields.Char(string='Kullanıcı ID', index=True)
+    sicil_no = fields.Char(string='Kullanıcı ID', index=True)
     kimlik_no = fields.Char(string='TC Kimlik No')
     kurum_adi = fields.Char(string='Kurum Adı')
     bolge_adi = fields.Selection(

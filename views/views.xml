@@ -19,7 +19,7 @@
 
                         <group>
                             <group string="Kurumsal Detaylar">
-                                <field name="customer_id" />
+                                <field name="sicil_no" string="No"/>
                                 <field name="rehberinde_olan_user_ids"/>
 
                                 <field name="bolge_adi"/>
@@ -71,7 +71,7 @@
         </field>
 
         <field name="complete_name" position="after">
-            <field name="customer_id" optional="show"/>
+            <field name="sicil_no" optional="show"/>
         </field>
 
         <field name="state_id" position="replace">
@@ -101,7 +101,7 @@
 <!--                <field name="search_phone_input" string="Telefon No (Gizli Arama)"/>-->
                 <field name="rehberinde_olan_user_ids" string="Rehber Sahibi (Personel)"/>
 
-                <field name="customer_id" />
+                <field name="sicil_no" string="Sicil No"/>
                 <field name="kurum_adi" string="Kurum Adı"/>
                 <field name="sorumlu_id" string="Sorumlu Personel"/>
                 <field name="etiketleyen_id" string="Etiketleyen Personel"/>

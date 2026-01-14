@@ -107,9 +107,6 @@ class SahaApi(http.Controller):
     #         pass
     #     return {'status': 'error', 'message': 'Kullanici adi veya sifre hatali.'}
 
-    # -------------------------------------------------------------------------
-    # 2. REHBER SORGULA
-    # -------------------------------------------------------------------------
     @http.route('/api/rehber_sorgula', type='json', auth='user', methods=['POST'], csrf=False)
     def rehber_sorgula(self, **kwargs):
         telefon_listesi = kwargs.get("telefon_listesi")
@@ -119,6 +116,7 @@ class SahaApi(http.Controller):
         hash_map = {}
         aranacak_hashler = []
 
+        # 1. Hash Haritası Oluştur
         for tel in telefon_listesi:
             hashed_val = self._clean_and_hash(tel)
             if hashed_val:
@@ -129,27 +127,19 @@ class SahaApi(http.Controller):
             return {'status': 'success', 'count': 0, 'data': []}
 
         domain = [('phone_hash', 'in', aranacak_hashler)]
+
+        # 2. Okunacak alanlara 'etiketleyen_id'yi ekliyoruz
         fields_to_read = [
             'id', 'name', 'phone_hash', 'taraf',
             'sicil_no', 'kimlik_no', 'kurum_adi',
             'bolge_adi', 'sorumlu_id', 'ozel_il_id',
-            'rehberinde_olan_user_ids'
+            'etiketleyen_id'  # <--- Sizin özel alanınız
         ]
 
         try:
-            # Partners recordset'ini alıyoruz
             partners = request.env['res.partner'].search(domain)
-            current_user_id = request.env.user.id
-
-            # M2M Güncelleme: Sadece listede olmayan kullanıcıyı ekle
-            for partner in partners:
-                if current_user_id not in partner.rehberinde_olan_user_ids.ids:
-                    partner.write({
-                        'rehberinde_olan_user_ids': [(4, current_user_id, 0)]
-                    })
-
-            # Güncel veriyi oku
             contacts = partners.read(fields_to_read)
+            current_user_id = request.env.user.id
         except Exception as e:
             return {'status': 'error', 'message': str(e)}
 
@@ -157,6 +147,19 @@ class SahaApi(http.Controller):
         for c in contacts:
             db_hash = c['phone_hash']
             orijinal_tel = hash_map.get(db_hash, "Bilinmiyor")
+
+            # --- ETIKETLEYEN KONTROLÜ ---
+            # Many2one alanlar read() sonucunda (ID, "İsim") şeklinde tuple döner.
+            # Örnek: c['etiketleyen_id'] -> (15, "Ahmet") veya False (boşsa)
+
+            etiketleyen_personel_id = False
+            if c['etiketleyen_id']:
+                # Tuple'ın 0. elemanı ID'dir.
+                etiketleyen_personel_id = c['etiketleyen_id'][0]
+
+            # Etiketleyen ID ile şu anki kullanıcı ID'si eşit mi?
+            etiketleyen_ben_miyim = (etiketleyen_personel_id == current_user_id)
+
             bulunanlar.append({
                 'id': c['id'],
                 'name': c['name'],
@@ -168,7 +171,8 @@ class SahaApi(http.Controller):
                 'kurum': c['kurum_adi'] or "",
                 'bolge': c['bolge_adi'] or "",
                 'sorumlu': c['sorumlu_id'][1] if c['sorumlu_id'] else "",
-                'sehir': c['ozel_il_id'] or ""
+                'sehir': c['ozel_il_id'] or "",
+                'etiketleyen_ben_miyim': etiketleyen_ben_miyim  # True/False
             })
 
         return {'status': 'success', 'count': len(bulunanlar), 'data': bulunanlar}

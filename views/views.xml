@@ -114,6 +114,35 @@
         </field>
     </record>
 
+    <record id="view_partner_pivot_saha" model="ir.ui.view">
+        <field name="name">res.partner.pivot.saha</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <pivot string="Saha İstatistikleri" display_quantity="true">
+
+                <field name="bolge_adi" type="row"/>
+
+                <field name="taraf" type="col"/>
+
+                </pivot>
+        </field>
+    </record>
+
+    <record id="view_partner_graph_saha" model="ir.ui.view">
+        <field name="name">res.partner.graph.saha</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <graph string="Saha Analizi" type="bar" stacked="True">
+                <field name="taraf" type="row"/>
+                <field name="bolge_adi" type="col"/>
+            </graph>
+        </field>
+    </record>
+
+ <record id="contacts.action_contacts" model="ir.actions.act_window">
+        <field name="view_mode">list,kanban,form,pivot,graph</field>
+    </record>
+
 
     <record id="view_saha_il_tree" model="ir.ui.view">
         <field name="name">saha.il.list</field>

@@ -167,6 +167,28 @@
         </field>
     </record>
 
+    <record id="view_users_form_inherit_region" model="ir.ui.view">
+        <field name="name">res.users.form.inherit.region</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='login']" position="before">
+                <field name="region" placeholder="Bölge Seçiniz..."/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_users_tree_inherit_region" model="ir.ui.view">
+        <field name="name">res.users.tree.inherit.region</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='login']" position="after">
+                <field name="region" />
+            </xpath>
+        </field>
+    </record>
+
  <record id="contacts.action_contacts" model="ir.actions.act_window">
         <field name="view_mode">list,kanban,form,pivot,graph</field>
     </record>

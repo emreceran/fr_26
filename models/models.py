@@ -65,8 +65,8 @@ class ResUsers(models.Model):
     # Kullanıcının kilitlendiği cihaz ID'si
     saha_device_id = fields.Char(string='Tanımlı Cihaz ID', copy=False, index=True)
 
-    region = fields.Selection([
-        ('istanbul', 'İstanbul'),
-        ('ankara', 'Ankara'),
-        ('konya', 'Konya')
-    ], string="Bölge", default=False,  help="Kullanıcının bağlı olduğu bölgeyi seçiniz.")
+    # region = fields.Selection([
+    #     ('istanbul', 'İstanbul'),
+    #     ('ankara', 'Ankara'),
+    #     ('konya', 'Konya')
+    # ], string="Bölge", default=False,  help="Kullanıcının bağlı olduğu bölgeyi seçiniz.")

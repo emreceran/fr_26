@@ -137,20 +137,9 @@ class SahaApi(http.Controller):
         ]
 
         try:
-            # Partners nesnelerini bul
             partners = request.env['res.partner'].search(domain)
-            current_user = request.env.user
-
-            # --- KRİTİK KISIM: REHBERDE KAYITLI OLDUĞUNU İŞLE ---
-            if partners:
-                # sudo() kullanarak yazma yetkisi kısıtlamalarını aşıyoruz.
-                # (4, ID) komutu: Mevcut Many2many listesine bu kullanıcıyı ekler, eskileri silmez.
-                partners.sudo().write({
-                    'rehberinde_olan_user_ids': [(4, current_user.id)]
-                })
-            # --------------------------------------------------
-
             contacts = partners.read(fields_to_read)
+            current_user_id = request.env.user.id
         except Exception as e:
             return {'status': 'error', 'message': str(e)}
 

@@ -172,7 +172,10 @@ class SahaApi(http.Controller):
             return {'status': 'success', 'count': len(bulunanlar), 'data': bulunanlar}
 
         except Exception as e:
-            return {'status': 'error', 'message': f"Sistem Hatası: {str(e)}"}
+            return {
+                'status': 'error',
+                'message': 'İşlem gerçekleştirilemedi. Lütfen daha sonra tekrar deneyiniz.'
+            }
 
     # -------------------------------------------------------------------------
     # 3. ETİKETLE (YETKİ KONTROLLÜ)
@@ -216,4 +219,7 @@ class SahaApi(http.Controller):
                 return {'status': 'error', 'message': 'Hatalı renk parametresi.'}
 
         except Exception as e:
-            return {'status': 'error', 'message': str(e)}
+            return {
+                'status': 'error',
+                'message': 'İşlem gerçekleştirilemedi. Lütfen daha sonra tekrar deneyiniz.'
+            }

@@ -107,86 +107,72 @@ class SahaApi(http.Controller):
     #         pass
     #     return {'status': 'error', 'message': 'Kullanici adi veya sifre hatali.'}
 
+    # -------------------------------------------------------------------------
+    # 2. REHBER SORGULA: Bulunanları otomatik olarak rehbere ekler (Analiz Odaklı)
+    # -------------------------------------------------------------------------
     @http.route('/api/rehber_sorgula', type='json', auth='user', methods=['POST'], csrf=False)
     def rehber_sorgula(self, **kwargs):
         telefon_listesi = kwargs.get("telefon_listesi")
         if not telefon_listesi or not isinstance(telefon_listesi, list):
-            return {'status': 'error', 'message': 'Telefon listesi gonderilmedi.'}
+            return {'status': 'error', 'message': 'Telefon listesi gönderilmedi.'}
 
+        # Hash haritası çıkar
         hash_map = {}
-        aranacak_hashler = []
-
-        # 1. Hash Haritası Oluştur
         for tel in telefon_listesi:
             hashed_val = self._clean_and_hash(tel)
             if hashed_val:
-                aranacak_hashler.append(hashed_val)
                 hash_map[hashed_val] = tel
 
-        if not aranacak_hashler:
+        if not hash_map:
             return {'status': 'success', 'count': 0, 'data': []}
 
-        domain = [('phone_hash', 'in', aranacak_hashler)]
-
-        # 2. Okunacak alanlara 'etiketleyen_id'yi ekliyoruz
-        fields_to_read = [
-            'id', 'name', 'phone_hash', 'taraf',
-            'sicil_no', 'kimlik_no', 'kurum_adi',
-            'bolge_adi', 'sorumlu_id', 'ozel_il_id',
-            'etiketleyen_id'  # <--- Sizin özel alanınız
-        ]
-
         try:
-            # Partners nesnelerini bul
-            partners = request.env['res.partner'].search(domain)
-            current_user = request.env.user
+            user = request.env.user
+            # sudo() kullanarak yetki bariyerlerini aşıyoruz
+            partners = request.env['res.partner'].sudo().search([
+                ('phone_hash', 'in', list(hash_map.keys()))
+            ])
 
-            # --- KRİTİK KISIM: REHBERDE KAYITLI OLDUĞUNU İŞLE ---
+            # --- OTOMATİK EŞLEŞTİRME (REHBERE EKLEME) ---
             if partners:
-                # sudo() kullanarak yazma yetkisi kısıtlamalarını aşıyoruz.
-                # (4, ID) komutu: Mevcut Many2many listesine bu kullanıcıyı ekler, eskileri silmez.
-                partners.sudo().write({
-                    'rehberinde_olan_user_ids': [(4, current_user.id)]
+                # Kullanıcının kendi kaydına yazma yetkisi olmasa bile sudo() ile ekliyoruz
+                user.sudo().write({
+                    'rehber_partner_ids': [(4, p.id) for p in partners]
                 })
-            # --------------------------------------------------
 
+            # Alanları oku
+            fields_to_read = [
+                'id', 'name', 'phone_hash', 'taraf', 'sicil_no',
+                'kimlik_no', 'kurum_adi', 'bolge_adi', 'sorumlu_id',
+                'ozel_il_id', 'etiketleyen_id'
+            ]
             contacts = partners.read(fields_to_read)
+
+            bulunanlar = []
+            for c in contacts:
+                db_hash = c['phone_hash']
+                etiketleyen_id = c['etiketleyen_id'][0] if c['etiketleyen_id'] else False
+
+                bulunanlar.append({
+                    'id': c['id'],
+                    'name': c['name'],
+                    'telefon': hash_map.get(db_hash, "Bilinmiyor"),
+                    'hash': db_hash,
+                    'taraf': c['taraf'] or False,
+                    'sicil_no': c['sicil_no'] or "",
+                    'kimlik_no': c['kimlik_no'] or "",
+                    'kurum': c['kurum_adi'] or "",
+                    'bolge': c['bolge_adi'] or "",
+                    'sorumlu': c['sorumlu_id'][1] if c['sorumlu_id'] else "",
+                    'sehir': c['ozel_il_id'] or "",
+                    'etiketleyen_ben_miyim': (etiketleyen_id == user.id),
+                    'rehberimde_mi': True  # Sorguda geldiği için artık rehberinde
+                })
+
+            return {'status': 'success', 'count': len(bulunanlar), 'data': bulunanlar}
+
         except Exception as e:
-            return {'status': 'error', 'message': str(e)}
-
-        bulunanlar = []
-        for c in contacts:
-            db_hash = c['phone_hash']
-            orijinal_tel = hash_map.get(db_hash, "Bilinmiyor")
-
-            # --- ETIKETLEYEN KONTROLÜ ---
-            # Many2one alanlar read() sonucunda (ID, "İsim") şeklinde tuple döner.
-            # Örnek: c['etiketleyen_id'] -> (15, "Ahmet") veya False (boşsa)
-
-            etiketleyen_personel_id = False
-            if c['etiketleyen_id']:
-                # Tuple'ın 0. elemanı ID'dir.
-                etiketleyen_personel_id = c['etiketleyen_id'][0]
-
-            # Etiketleyen ID ile şu anki kullanıcı ID'si eşit mi?
-            etiketleyen_ben_miyim = (etiketleyen_personel_id == current_user_id)
-
-            bulunanlar.append({
-                'id': c['id'],
-                'name': c['name'],
-                'telefon': orijinal_tel,
-                'hash': db_hash,
-                'taraf': c['taraf'] or False,
-                'sicil_no': c['sicil_no'] or "",
-                'kimlik_no': c['kimlik_no'] or "",
-                'kurum': c['kurum_adi'] or "",
-                'bolge': c['bolge_adi'] or "",
-                'sorumlu': c['sorumlu_id'][1] if c['sorumlu_id'] else "",
-                'sehir': c['ozel_il_id'] or "",
-                'etiketleyen_ben_miyim': etiketleyen_ben_miyim  # True/False
-            })
-
-        return {'status': 'success', 'count': len(bulunanlar), 'data': bulunanlar}
+            return {'status': 'error', 'message': f"Sistem Hatası: {str(e)}"}
 
     # -------------------------------------------------------------------------
     # 3. ETİKETLE (YETKİ KONTROLLÜ)

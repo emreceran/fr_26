@@ -29,11 +29,12 @@ class ResPartner(models.Model):
         ('beyaz', 'Beyaz (Tarafsız)'),
     ], string='Taraf Seçimi', default=False, tracking=True)  # default=False kalsın, ama listede False olmasın
 
+    # Analiz için: Bu kişi hangi personellerin rehberinde?
     rehberinde_olan_user_ids = fields.Many2many(
         'res.users',
-        'res_partner_rehber_users_rel',  # İlişki tablosu adı
-        'partner_id',
-        'user_id',
+        'res_partner_rehber_users_rel',  # AYNI ara tablo adı
+        'partner_id',  # Bu modelin ID'si
+        'user_id',  # Karşı modelin ID'si
         string='Rehberinde Olan Kullanıcılar'
     )
 
@@ -64,6 +65,14 @@ class ResUsers(models.Model):
 
     # Kullanıcının kilitlendiği cihaz ID'si
     saha_device_id = fields.Char(string='Tanımlı Cihaz ID', copy=False, index=True)
+
+    rehber_partner_ids = fields.Many2many(
+        'res.partner',
+        'res_partner_rehber_users_rel',  # Ara tablo adı
+        'user_id',  # Bu modelin ID'si
+        'partner_id',  # Karşı modelin ID'si
+        string='Rehberimdeki Kişiler'
+    )
 
     # region = fields.Selection([
     #     ('istanbul', 'İstanbul'),

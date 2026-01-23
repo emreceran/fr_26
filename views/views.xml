@@ -173,7 +173,7 @@
         <field name="inherit_id" ref="base.view_users_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='login']" position="after">
-                <field name="region" placeholder="Bölge Seçiniz..."/>
+                <field name="bolge" placeholder="Bölge Seçiniz..."/>
             </xpath>
         </field>
     </record>
@@ -184,7 +184,7 @@
         <field name="inherit_id" ref="base.view_users_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='login']" position="after">
-                <field name="region" />
+                <field name="bolge" />
             </xpath>
         </field>
     </record> -->

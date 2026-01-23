@@ -81,4 +81,4 @@ class ResUsers(models.Model):
     #     ('ankara', 'Ankara'),
     #     ('konya', 'Konya')
     # ], string="Bölge", default=False,  help="Kullanıcının bağlı olduğu bölgeyi seçiniz.")
-    device_id = fields.Char(string='Tanımlı Cihaz IDss', copy=False, index=True)
+    # device_id = fields.Char(string='Tanımlı Cihaz IDss', copy=False, index=True)

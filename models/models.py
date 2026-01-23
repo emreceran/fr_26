@@ -80,4 +80,4 @@ class ResUsers(models.Model):
         ('bursa', 'Bursa'),
         ('ankara', 'Ankara'),
         ('konya', 'Konya')
-    ], string="Bölge", default=konya,  help="Kullanıcının bağlı olduğu bölgeyi seçiniz.")
+    ], string="Bölge", default=False,  help="Kullanıcının bağlı olduğu bölgeyi seçiniz.")

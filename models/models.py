@@ -74,10 +74,10 @@ class ResUsers(models.Model):
         string='Rehberimdeki Kişiler'
     )
 
-    region = fields.Selection([
-        ('ik', 'İstanbul Koalisyon'),
-        ('if', 'İstanbul Danışman'),
-        ('bursa', 'Bursa'),
-        ('ankara', 'Ankara'),
-        ('konya', 'Konya')
-    ], string="Bölge", default=False,  help="Kullanıcının bağlı olduğu bölgeyi seçiniz.")
+    # region = fields.Selection([
+    #     ('ik', 'İstanbul Koalisyon'),
+    #     ('if', 'İstanbul Danışman'),
+    #     ('bursa', 'Bursa'),
+    #     ('ankara', 'Ankara'),
+    #     ('konya', 'Konya')
+    # ], string="Bölge", default=False,  help="Kullanıcının bağlı olduğu bölgeyi seçiniz.")

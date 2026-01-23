@@ -74,10 +74,11 @@ class ResUsers(models.Model):
         string='Rehberimdeki Kişiler'
     )
 
-    bolge = fields.Selection([
-        ('ik', 'İstanbul Koalisyon'),
-        ('if', 'İstanbul Danışman'),
-        ('bursa', 'Bursa'),
-        ('ankara', 'Ankara'),
-        ('konya', 'Konya')
-    ], string="Bölge", default=False,  help="Kullanıcının bağlı olduğu bölgeyi seçiniz.")
+    # bolge = fields.Selection([
+    #     ('ik', 'İstanbul Koalisyon'),
+    #     ('if', 'İstanbul Danışman'),
+    #     ('bursa', 'Bursa'),
+    #     ('ankara', 'Ankara'),
+    #     ('konya', 'Konya')
+    # ], string="Bölge", default=False,  help="Kullanıcının bağlı olduğu bölgeyi seçiniz.")
+    device_id = fields.Char(string='Tanımlı Cihaz IDss', copy=False, index=True)

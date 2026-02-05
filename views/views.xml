@@ -34,7 +34,7 @@
                             <group>
                                 <field name="sorumlu_id" widget="many2one_avatar_user"/>
                                 <field name="etiketleyen_id" readonly="1" widget="many2one_avatar_user"/>
-                                <!-- <field name="secime_girdi" widget="boolean_toggle"/> -->
+                                 <field name="secime_girdi" widget="boolean_toggle"/>
                             </group>
                         </group>
 
@@ -69,7 +69,7 @@
                    decoration-success="taraf == 'yesil'"
                    decoration-muted="taraf == 'beyaz'"
                    string="Durum"/>
-            <!-- <field name="secime_girdi" optional="show" widget="boolean_toggle"/> -->
+             <field name="secime_girdi" optional="show" widget="boolean_toggle"/>
         </field>
 
         <field name="complete_name" position="after">
@@ -87,7 +87,7 @@
 
         <field name="activity_ids" position="after">
             <field name="rehberinde_olan_user_ids" widget="many2many_avatar_user" string="Rehberdekiler"/>
-            <!-- <field name="rehber_sayisi" optional="show" sum="Toplam"/> -->
+             <field name="rehber_sayisi" optional="show" sum="Toplam"/>
 
 
             <field name="sorumlu_id" widget="many2one_avatar_user" string="Sorumlu" optional="hide"/>

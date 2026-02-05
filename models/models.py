@@ -73,7 +73,7 @@ class ResPartner(models.Model):
         # default değeri vermiyoruz, böylece boş gelebilir.
     )
     ozel_il_id = fields.Char(string='Şehir (İl)', help="Plaka kodlu özel il seçimi")
-    secime_girdi = fields.Boolean(string='Seçime Girdi', default=False)
+    secime_girdi = fields.Boolean(string='Seçime Girdi', default=False, store=False)
 
 
 

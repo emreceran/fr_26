@@ -87,7 +87,7 @@
 
         <field name="activity_ids" position="after">
             <field name="rehberinde_olan_user_ids" widget="many2many_avatar_user" string="Rehberdekiler"/>
-            <field name="rehber_sayisi" optional="show" sum="Toplam"/>
+            <!-- <field name="rehber_sayisi" optional="show" sum="Toplam"/> -->
 
 
             <field name="sorumlu_id" widget="many2one_avatar_user" string="Sorumlu" optional="hide"/>

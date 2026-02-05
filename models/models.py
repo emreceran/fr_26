@@ -37,7 +37,7 @@ class ResPartner(models.Model):
         string='Rehberinde Olan Kullanıcılar'
     )
     
-    rehber_sayisi = fields.Integer(string='Rehber Sayısı', compute='_compute_rehber_sayisi', store=False)
+    rehber_sayisi = fields.Integer(string='Rehber Sayısı', compute='_compute_rehber_sayisi', store=True)
 
     @api.depends('rehberinde_olan_user_ids')
     def _compute_rehber_sayisi(self):
@@ -73,7 +73,7 @@ class ResPartner(models.Model):
         # default değeri vermiyoruz, böylece boş gelebilir.
     )
     ozel_il_id = fields.Char(string='Şehir (İl)', help="Plaka kodlu özel il seçimi")
-    secime_girdi = fields.Boolean(string='Seçime Girdi', default=False, store=False)
+    secime_girdi = fields.Boolean(string='Seçime Girdi', default=False)
 
 
 

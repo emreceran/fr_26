@@ -37,12 +37,12 @@ class ResPartner(models.Model):
         string='Rehberinde Olan Kullanıcılar'
     )
     
-    # rehber_sayisi = fields.Integer(string='Rehber Sayısı', compute='_compute_rehber_sayisi', store=True)
+    rehber_sayisi = fields.Integer(string='Rehber Sayısı', compute='_compute_rehber_sayisi', store=True)
 
-    # @api.depends('rehberinde_olan_user_ids')
-    # def _compute_rehber_sayisi(self):
-    #     for record in self:
-    #         record.rehber_sayisi = len(record.rehberinde_olan_user_ids)
+    @api.depends('rehberinde_olan_user_ids')
+    def _compute_rehber_sayisi(self):
+        for record in self:
+            record.rehber_sayisi = len(record.rehberinde_olan_user_ids)
 
     # --- YENİ EKLENEN HASH ALANI ---
     # index=True yaptık ki arama performansı yüksek olsun
@@ -73,7 +73,7 @@ class ResPartner(models.Model):
         # default değeri vermiyoruz, böylece boş gelebilir.
     )
     ozel_il_id = fields.Char(string='Şehir (İl)', help="Plaka kodlu özel il seçimi")
-    # secime_girdi = fields.Boolean(string='Seçime Girdi', default=False)
+    secime_girdi = fields.Boolean(string='Seçime Girdi', default=False)
 
 
 

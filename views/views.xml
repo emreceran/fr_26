@@ -34,6 +34,7 @@
                             <group>
                                 <field name="sorumlu_id" widget="many2one_avatar_user"/>
                                 <field name="etiketleyen_id" readonly="1" widget="many2one_avatar_user"/>
+                                <field name="secime_girdi" widget="boolean_toggle"/>
                             </group>
                         </group>
 
@@ -68,10 +69,12 @@
                    decoration-success="taraf == 'yesil'"
                    decoration-muted="taraf == 'beyaz'"
                    string="Durum"/>
+            <field name="secime_girdi" optional="show" widget="boolean_toggle"/>
         </field>
 
         <field name="complete_name" position="after">
             <field name="sicil_no" optional="show"/>
+            <field name="sicil_no_int" optional="hide" string="Sicil No (Int)"/>
         </field>
 
         <field name="state_id" position="replace">
@@ -84,6 +87,8 @@
 
         <field name="activity_ids" position="after">
             <field name="rehberinde_olan_user_ids" widget="many2many_avatar_user" string="Rehberdekiler"/>
+            <field name="rehber_sayisi" optional="show" sum="Toplam"/>
+
 
             <field name="sorumlu_id" widget="many2one_avatar_user" string="Sorumlu" optional="hide"/>
             <field name="etiketleyen_id" widget="many2one_avatar_user" string="Etiketleyen"/>
@@ -103,6 +108,7 @@
                 <field name="rehberinde_olan_user_ids" string="Rehber Sahibi (Personel)"/>
 
                 <field name="sicil_no" string="Sicil No"/>
+                <field name="sicil_no_int" string="Sicil No (Int)"/>
                 <field name="kurum_adi" string="Kurum Adı"/>
                 <field name="sorumlu_id" string="Sorumlu Personel"/>
                 <field name="etiketleyen_id" string="Etiketleyen Personel"/>
@@ -118,6 +124,8 @@
                 <filter string="Yeşil Liste" name="filter_yesil" domain="[('taraf', '=', 'yesil')]"/>
                 <filter string="Tarafsız (Beyaz)" name="filter_beyaz" domain="[('taraf', '=', 'beyaz')]"/>
                 <filter string="Atanmamış (Seçimsiz)" name="filter_atanmamis" domain="[('taraf', '=', False)]"/>
+                <separator/>
+                <filter string="Seçime Girenler" name="filter_secime_girdi" domain="[('secime_girdi', '=', True)]"/>
                 <separator/>
 
                 <filter string="Herhangi Bir Rehberde Olanlar" name="filter_rehber_dolu" domain="[('rehberinde_olan_user_ids', '!=', False)]"/>

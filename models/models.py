@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-from odoo import models, fields
+from odoo import models, fields, api
 
 class SahaIl(models.Model):
     _name = 'saha.il'
@@ -37,6 +36,13 @@ class ResPartner(models.Model):
         'user_id',  # Karşı modelin ID'si
         string='Rehberinde Olan Kullanıcılar'
     )
+    
+    rehber_sayisi = fields.Integer(string='Rehber Sayısı', compute='_compute_rehber_sayisi', store=True)
+
+    @api.depends('rehberinde_olan_user_ids')
+    def _compute_rehber_sayisi(self):
+        for record in self:
+            record.rehber_sayisi = len(record.rehberinde_olan_user_ids)
 
     # --- YENİ EKLENEN HASH ALANI ---
     # index=True yaptık ki arama performansı yüksek olsun
@@ -45,6 +51,16 @@ class ResPartner(models.Model):
                              )
 
     sicil_no = fields.Char(string='Kullanıcı ID', index=True)
+    sicil_no_int = fields.Integer(string='Kullanıcı ID (Sayı)', compute='_compute_sicil_no_int', index=True)
+    
+    @api.depends('sicil_no')
+    def _compute_sicil_no_int(self):
+        for record in self:
+            try:
+                record.sicil_no_int = int(record.sicil_no) if record.sicil_no else 0
+            except (ValueError, TypeError):
+                record.sicil_no_int = 0
+    
     kimlik_no = fields.Char(string='TC Kimlik No')
     kurum_adi = fields.Char(string='Kurum Adı')
     bolge_adi = fields.Selection(
@@ -57,6 +73,7 @@ class ResPartner(models.Model):
         # default değeri vermiyoruz, böylece boş gelebilir.
     )
     ozel_il_id = fields.Char(string='Şehir (İl)', help="Plaka kodlu özel il seçimi")
+    secime_girdi = fields.Boolean(string='Seçime Girdi', default=False)
 
 
 

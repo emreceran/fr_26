@@ -37,7 +37,7 @@ class ResPartner(models.Model):
         string='Rehberinde Olan Kullanıcılar'
     )
     
-    rehber_sayisi = fields.Integer(string='Rehber Sayısı', compute='_compute_rehber_sayisi', store=True)
+    rehber_sayisi = fields.Integer(string='Rehber Sayısı', compute='_compute_rehber_sayisi', store=False)
 
     @api.depends('rehberinde_olan_user_ids')
     def _compute_rehber_sayisi(self):

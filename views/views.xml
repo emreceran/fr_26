@@ -34,7 +34,7 @@
                             <group>
                                 <field name="sorumlu_id" widget="many2one_avatar_user"/>
                                 <field name="etiketleyen_id" readonly="1" widget="many2one_avatar_user"/>
-                                <field name="secime_girdi" widget="boolean_toggle"/>
+                                <!-- <field name="secime_girdi" widget="boolean_toggle"/> -->
                             </group>
                         </group>
 
@@ -69,7 +69,7 @@
                    decoration-success="taraf == 'yesil'"
                    decoration-muted="taraf == 'beyaz'"
                    string="Durum"/>
-            <field name="secime_girdi" optional="show" widget="boolean_toggle"/>
+            <!-- <field name="secime_girdi" optional="show" widget="boolean_toggle"/> -->
         </field>
 
         <field name="complete_name" position="after">
@@ -125,7 +125,7 @@
                 <filter string="Tarafsız (Beyaz)" name="filter_beyaz" domain="[('taraf', '=', 'beyaz')]"/>
                 <filter string="Atanmamış (Seçimsiz)" name="filter_atanmamis" domain="[('taraf', '=', False)]"/>
                 <separator/>
-                <filter string="Seçime Girenler" name="filter_secime_girdi" domain="[('secime_girdi', '=', True)]"/>
+                <!-- <filter string="Seçime Girenler" name="filter_secime_girdi" domain="[('secime_girdi', '=', True)]"/> -->
                 <separator/>
 
                 <filter string="Herhangi Bir Rehberde Olanlar" name="filter_rehber_dolu" domain="[('rehberinde_olan_user_ids', '!=', False)]"/>

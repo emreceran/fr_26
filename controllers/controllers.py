@@ -144,7 +144,7 @@ class SahaApi(http.Controller):
             fields_to_read = [
                 'id', 'name', 'phone_hash', 'taraf', 'sicil_no',
                 'kimlik_no', 'kurum_adi', 'bolge_adi', 'sorumlu_id',
-                'ozel_il_id', 'etiketleyen_id'
+                'ozel_il_id', 'etiketleyen_id', 'secime_girdi'
             ]
             contacts = partners.read(fields_to_read)
 
@@ -166,7 +166,8 @@ class SahaApi(http.Controller):
                     'sorumlu': c['sorumlu_id'][1] if c['sorumlu_id'] else "",
                     'sehir': c['ozel_il_id'] or "",
                     'etiketleyen_ben_miyim': (etiketleyen_id == user.id),
-                    'rehberimde_mi': True  # Sorguda geldiği için artık rehberinde
+                    'rehberimde_mi': True,  # Sorguda geldiği için artık rehberinde
+                    'secime_girdi': c['secime_girdi'] or False
                 })
 
             return {'status': 'success', 'count': len(bulunanlar), 'data': bulunanlar}

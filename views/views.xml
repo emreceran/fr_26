@@ -125,7 +125,7 @@
                 <filter string="Tarafsız (Beyaz)" name="filter_beyaz" domain="[('taraf', '=', 'beyaz')]"/>
                 <filter string="Atanmamış (Seçimsiz)" name="filter_atanmamis" domain="[('taraf', '=', False)]"/>
                 <separator/>
-                <!-- <filter string="Seçime Girenler" name="filter_secime_girdi" domain="[('secime_girdi', '=', True)]"/> -->
+                <filter string="Seçime Girenler" name="filter_secime_girdi" domain="[('secime_girdi', '=', True)]"/>
                 <separator/>
 
                 <filter string="Herhangi Bir Rehberde Olanlar" name="filter_rehber_dolu" domain="[('rehberinde_olan_user_ids', '!=', False)]"/>

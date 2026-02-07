@@ -119,26 +119,33 @@ class ResPartner(models.Model):
         """
         Override _search to handle space/comma-separated sicil_no searches
         Examples: "3 5 7" or "3,5,7" or "3, 5, 7" → sicil_no = 3 OR 5 OR 7
+        Uses EXACT match (=) instead of partial match (ilike)
         """
         if domain:
             new_domain = []
             for item in domain:
                 if isinstance(item, (list, tuple)) and len(item) == 3:
                     field, operator, value = item
-                    # If searching sicil_no with a value containing spaces or commas
-                    if field == 'sicil_no' and isinstance(value, str) and (' ' in value or ',' in value):
-                        # Split by both space and comma, remove empty strings
-                        import re
-                        sicil_values = [v.strip() for v in re.split(r'[,\s]+', value) if v.strip()]
-                        if len(sicil_values) > 1:
-                            # Build OR expression
-                            or_domain = []
-                            for val in sicil_values:
-                                or_domain.append(('sicil_no', operator, val))
-                            # Add OR operators
-                            for _ in range(len(sicil_values) - 1):
-                                or_domain.insert(0, '|')
-                            new_domain.extend(or_domain)
+                    # If searching sicil_no
+                    if field == 'sicil_no' and isinstance(value, str):
+                        # Check if value contains spaces or commas (multi-value search)
+                        if ' ' in value or ',' in value:
+                            # Split by both space and comma, remove empty strings
+                            import re
+                            sicil_values = [v.strip() for v in re.split(r'[,\s]+', value) if v.strip()]
+                            if len(sicil_values) > 1:
+                                # Build OR expression with EXACT match
+                                or_domain = []
+                                for val in sicil_values:
+                                    or_domain.append(('sicil_no', '=', val))
+                                # Add OR operators
+                                for _ in range(len(sicil_values) - 1):
+                                    or_domain.insert(0, '|')
+                                new_domain.extend(or_domain)
+                                continue
+                        else:
+                            # Single value search - use EXACT match
+                            new_domain.append(('sicil_no', '=', value))
                             continue
                 new_domain.append(item)
             domain = new_domain

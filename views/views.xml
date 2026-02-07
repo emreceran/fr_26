@@ -146,6 +146,10 @@
 
                 <filter string="Rehberinde Olan Personele Göre" name="group_by_rehber" context="{'group_by': 'rehberinde_olan_user_ids'}"/>
                 <filter string="Seçime Girdi Durumuna Göre" name="group_by_secime_girdi" context="{'group_by': 'secime_girdi'}"/>
+                <separator/>
+                <filter string="Analiz: Kırmızı vs Diğerleri" name="group_by_analiz_1" context="{'group_by': 'taraf_analiz_1'}"/>
+                <filter string="Analiz: Mavi vs Diğerleri" name="group_by_analiz_2" context="{'group_by': 'taraf_analiz_2'}"/>
+                <filter string="Analiz: Kırmızı+Mavi vs Diğerleri" name="group_by_analiz_3" context="{'group_by': 'taraf_analiz_3'}"/>
             </xpath>
 
         </field>

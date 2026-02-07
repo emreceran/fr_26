@@ -28,6 +28,52 @@ class ResPartner(models.Model):
         ('beyaz', 'Beyaz (Tarafsız)'),
     ], string='Taraf Seçimi', default=False, tracking=True)  # default=False kalsın, ama listede False olmasın
 
+    # PRESET 1: Kırmızı vs Diğerleri
+    taraf_analiz_1 = fields.Selection([
+        ('kirmizi', 'Kırmızı'),
+        ('digerleri', 'Diğerleri'),
+    ], string='Analiz: Kırmızı vs Diğerleri', compute='_compute_taraf_analiz_1', store=True)
+
+    @api.depends('taraf')
+    def _compute_taraf_analiz_1(self):
+        for record in self:
+            if record.taraf == 'kirmizi':
+                record.taraf_analiz_1 = 'kirmizi'
+            else:
+                record.taraf_analiz_1 = 'digerleri'
+
+    # PRESET 2: Mavi vs Diğerleri
+    taraf_analiz_2 = fields.Selection([
+        ('mavi', 'Mavi'),
+        ('digerleri', 'Diğerleri'),
+    ], string='Analiz: Mavi vs Diğerleri', compute='_compute_taraf_analiz_2', store=True)
+
+    @api.depends('taraf')
+    def _compute_taraf_analiz_2(self):
+        for record in self:
+            if record.taraf == 'mavi':
+                record.taraf_analiz_2 = 'mavi'
+            else:
+                record.taraf_analiz_2 = 'digerleri'
+
+    # PRESET 3: Kırmızı + Mavi vs Diğerleri
+    taraf_analiz_3 = fields.Selection([
+        ('kirmizi', 'Kırmızı'),
+        ('mavi', 'Mavi'),
+        ('digerleri', 'Diğerleri'),
+    ], string='Analiz: Kırmızı+Mavi vs Diğerleri', compute='_compute_taraf_analiz_3', store=True)
+
+    @api.depends('taraf')
+    def _compute_taraf_analiz_3(self):
+        for record in self:
+            if record.taraf == 'kirmizi':
+                record.taraf_analiz_3 = 'kirmizi'
+            elif record.taraf == 'mavi':
+                record.taraf_analiz_3 = 'mavi'
+            else:
+                record.taraf_analiz_3 = 'digerleri'
+
+
     # Analiz için: Bu kişi hangi personellerin rehberinde?
     rehberinde_olan_user_ids = fields.Many2many(
         'res.users',

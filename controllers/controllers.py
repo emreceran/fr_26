@@ -183,9 +183,26 @@ class SahaApi(http.Controller):
     # -------------------------------------------------------------------------
     @http.route('/api/etiketle', type='json', auth='user', methods=['POST'], csrf=False)
     def etiketle(self, **kwargs):
+        from datetime import datetime
+        import pytz
+        
         customer_id = kwargs.get("customer_id")
         renk = kwargs.get("renk")
         user = request.env.user
+
+        # --- ZAMAN KONTROLÜ ---
+        # Türkiye saat diliminde şu anki saati al
+        tz = pytz.timezone('Europe/Istanbul')
+        now = datetime.now(tz)
+        current_time = now.time()
+        
+        # 15:30'dan sonra etiketlemeye izin verme
+        cutoff_time = datetime.strptime("15:30", "%H:%M").time()
+        if current_time > cutoff_time:
+            return {
+                'status': 'error',
+                'message': 'Etiketleme zamanı geçti. Etiketleme işlemi saat 15:30\'a kadar yapılabilir.'
+            }
 
         try:
             partner = request.env['res.partner'].browse(int(customer_id))

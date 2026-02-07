@@ -196,12 +196,12 @@ class SahaApi(http.Controller):
         now = datetime.now(tz)
         current_time = now.time()
         
-        # 15:40'dan sonra etiketlemeye izin verme
-        cutoff_time = datetime.strptime("15:40", "%H:%M").time()
+        # 17:00'dan sonra etiketlemeye izin verme
+        cutoff_time = datetime.strptime("17:00", "%H:%M").time()
         if current_time > cutoff_time:
             return {
                 'status': 'error',
-                'message': 'Etiketleme zamanı geçti. Etiketleme işlemi saat 15:40\'a kadar yapılabilir.'
+                'message': 'Etiketleme zamanı geçti. Etiketleme işlemi saat 17:00\'a kadar yapılabilir.'
             }
 
         try:

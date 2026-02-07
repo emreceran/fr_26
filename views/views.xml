@@ -145,6 +145,7 @@
                 <filter string="Etiketleyen Personele Göre" name="group_by_etiketleyen" context="{'group_by': 'etiketleyen_id'}"/>
 
                 <filter string="Rehberinde Olan Personele Göre" name="group_by_rehber" context="{'group_by': 'rehberinde_olan_user_ids'}"/>
+                <filter string="Seçime Girdi Durumuna Göre" name="group_by_secime_girdi" context="{'group_by': 'secime_girdi'}"/>
             </xpath>
 
         </field>

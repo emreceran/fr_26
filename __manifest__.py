@@ -11,7 +11,6 @@
         # 'wizard/vault_fetch_wizard_view.xml',
         'views/views.xml',
     ],
-    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': True,
 }

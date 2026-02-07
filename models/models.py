@@ -51,15 +51,8 @@ class ResPartner(models.Model):
                              )
 
     sicil_no = fields.Char(string='Kullanıcı ID', index=True)
-    sicil_no_int = fields.Integer(string='Kullanıcı ID (Sayı)', compute='_compute_sicil_no_int', index=True)
+    sicil_no_int = fields.Integer(string='Kullanıcı ID (Sayı)', default=0, index=True)
     
-    @api.depends('sicil_no')
-    def _compute_sicil_no_int(self):
-        for record in self:
-            try:
-                record.sicil_no_int = int(record.sicil_no) if record.sicil_no else 0
-            except (ValueError, TypeError):
-                record.sicil_no_int = 0
     
     kimlik_no = fields.Char(string='TC Kimlik No')
     kurum_adi = fields.Char(string='Kurum Adı')
@@ -74,6 +67,38 @@ class ResPartner(models.Model):
     )
     ozel_il_id = fields.Char(string='Şehir (İl)', help="Plaka kodlu özel il seçimi")
     secime_girdi = fields.Boolean(string='Seçime Girdi', default=False, store=True)
+
+    @api.model
+    def _search(self, domain, offset=0, limit=None, order=None):
+        """
+        Override _search to handle space/comma-separated sicil_no searches
+        Examples: "3 5 7" or "3,5,7" or "3, 5, 7" → sicil_no = 3 OR 5 OR 7
+        """
+        if domain:
+            new_domain = []
+            for item in domain:
+                if isinstance(item, (list, tuple)) and len(item) == 3:
+                    field, operator, value = item
+                    # If searching sicil_no with a value containing spaces or commas
+                    if field == 'sicil_no' and isinstance(value, str) and (' ' in value or ',' in value):
+                        # Split by both space and comma, remove empty strings
+                        import re
+                        sicil_values = [v.strip() for v in re.split(r'[,\s]+', value) if v.strip()]
+                        if len(sicil_values) > 1:
+                            # Build OR expression
+                            or_domain = []
+                            for val in sicil_values:
+                                or_domain.append(('sicil_no', operator, val))
+                            # Add OR operators
+                            for _ in range(len(sicil_values) - 1):
+                                or_domain.insert(0, '|')
+                            new_domain.extend(or_domain)
+                            continue
+                new_domain.append(item)
+            domain = new_domain
+        
+        return super(ResPartner, self)._search(domain, offset=offset, limit=limit, order=order)
+
 
 
 

@@ -28,50 +28,32 @@ class ResPartner(models.Model):
         ('beyaz', 'Beyaz (Tarafsız)'),
     ], string='Taraf Seçimi', default=False, tracking=True)  # default=False kalsın, ama listede False olmasın
 
-    # # PRESET 1: Kırmızı vs Diğerleri
-    # taraf_analiz_1 = fields.Selection([
-    #     ('kirmizi', 'Kırmızı'),
-    #     ('digerleri', 'Diğerleri'),
-    # ], string='Analiz: Kırmızı vs Diğerleri', compute='_compute_taraf_analiz_1', store=True)
 
-    # @api.depends('taraf')
-    # def _compute_taraf_analiz_1(self):
-    #     for record in self:
-    #         if record.taraf == 'kirmizi':
-    #             record.taraf_analiz_1 = 'kirmizi'
-    #         else:
-    #             record.taraf_analiz_1 = 'digerleri'
+    # 7 SÜTUN ANALİZİ: Her kayıt için 7 ayrı değer (0 veya 1)
+    analiz_beyaz = fields.Integer(string='Beyaz', compute='_compute_analiz_7_sutun', store=True)
+    analiz_kirmizi = fields.Integer(string='Kırmızı', compute='_compute_analiz_7_sutun', store=True)
+    analiz_mavi = fields.Integer(string='Mavi', compute='_compute_analiz_7_sutun', store=True)
+    analiz_yesil = fields.Integer(string='Yeşil', compute='_compute_analiz_7_sutun', store=True)
+    analiz_atanmamis = fields.Integer(string='Atanmamış', compute='_compute_analiz_7_sutun', store=True)
+    analiz_ymb_toplam = fields.Integer(string='Yeşil+Mavi+Beyaz', compute='_compute_analiz_7_sutun', store=True)
+    analiz_kirmizi_haric = fields.Integer(string='Kırmızı Hariç', compute='_compute_analiz_7_sutun', store=True)
 
-    # # PRESET 2: Mavi vs Diğerleri
-    # taraf_analiz_2 = fields.Selection([
-    #     ('mavi', 'Mavi'),
-    #     ('digerleri', 'Diğerleri'),
-    # ], string='Analiz: Mavi vs Diğerleri', compute='_compute_taraf_analiz_2', store=True)
-
-    # @api.depends('taraf')
-    # def _compute_taraf_analiz_2(self):
-    #     for record in self:
-    #         if record.taraf == 'mavi':
-    #             record.taraf_analiz_2 = 'mavi'
-    #         else:
-    #             record.taraf_analiz_2 = 'digerleri'
-
-    # # PRESET 3: Kırmızı + Mavi vs Diğerleri
-    # taraf_analiz_3 = fields.Selection([
-    #     ('kirmizi', 'Kırmızı'),
-    #     ('mavi', 'Mavi'),
-    #     ('digerleri', 'Diğerleri'),
-    # ], string='Analiz: Kırmızı+Mavi vs Diğerleri', compute='_compute_taraf_analiz_3', store=True)
-
-    # @api.depends('taraf')
-    # def _compute_taraf_analiz_3(self):
-    #     for record in self:
-    #         if record.taraf == 'kirmizi':
-    #             record.taraf_analiz_3 = 'kirmizi'
-    #         elif record.taraf == 'mavi':
-    #             record.taraf_analiz_3 = 'mavi'
-    #         else:
-    #             record.taraf_analiz_3 = 'digerleri'
+    @api.depends('taraf')
+    def _compute_analiz_7_sutun(self):
+        """Her kayıt için 7 sütunun değerini hesapla"""
+        for record in self:
+            # 5 temel kategori
+            record.analiz_beyaz = 1 if record.taraf == 'beyaz' else 0
+            record.analiz_kirmizi = 1 if record.taraf == 'kirmizi' else 0
+            record.analiz_mavi = 1 if record.taraf == 'mavi' else 0
+            record.analiz_yesil = 1 if record.taraf == 'yesil' else 0
+            record.analiz_atanmamis = 1 if not record.taraf else 0
+            
+            # Toplam 1: Yeşil+Mavi+Beyaz
+            record.analiz_ymb_toplam = 1 if record.taraf in ['yesil', 'mavi', 'beyaz'] else 0
+            
+            # Toplam 2: Kırmızı Hariç (Yeşil+Mavi+Beyaz+Atanmamış)
+            record.analiz_kirmizi_haric = 1 if (record.taraf in ['yesil', 'mavi', 'beyaz'] or not record.taraf) else 0
 
 
     # Analiz için: Bu kişi hangi personellerin rehberinde?

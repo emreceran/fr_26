@@ -158,15 +158,7 @@
             <pivot string="Saha İstatistikleri" display_quantity="true">
 
                 <field name="bolge_adi" type="row"/>
-                
-                <!-- 7 Sütun Analizi -->
-                <field name="analiz_beyaz" type="measure"/>
-                <field name="analiz_kirmizi" type="measure"/>
-                <field name="analiz_mavi" type="measure"/>
-                <field name="analiz_yesil" type="measure"/>
-                <field name="analiz_atanmamis" type="measure"/>
-                <field name="analiz_ymb_toplam" type="measure"/>
-                <field name="analiz_kirmizi_haric" type="measure"/>
+                <field name="taraf" type="col"/>
 
                 </pivot>
         </field>

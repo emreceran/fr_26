@@ -34,7 +34,9 @@
                             <group>
                                 <field name="sorumlu_id" widget="many2one_avatar_user"/>
                                 <field name="etiketleyen_id" readonly="1" widget="many2one_avatar_user"/>
-                                 <field name="secime_girdi" widget="boolean_toggle"/>
+
+                                <field name="etiketleme_zamani" />
+                                <field name="secime_girdi" widget="boolean_toggle"/>
                             </group>
                         </group>
 
@@ -92,6 +94,7 @@
 
             <field name="sorumlu_id" widget="many2one_avatar_user" string="Sorumlu" optional="hide"/>
             <field name="etiketleyen_id" widget="many2one_avatar_user" string="Etiketleyen"/>
+            <field name="etiketleme_zamani" />
         </field>
 
     </field>

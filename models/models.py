@@ -21,6 +21,8 @@ class ResPartner(models.Model):
     sorumlu_id = fields.Many2one('res.users', string='Sorumlu Personel', index=True)
     etiketleyen_id = fields.Many2one('res.users', string='Etiketleyen Personel', readonly=True)
 
+    etiketleme_zamani = fields.Datetime(string='Etiketleme Zamanı', readonly=True) # Burayı ekledik
+
     taraf = fields.Selection([
         ('kirmizi', 'Kırmızı'),
         ('mavi', 'Mavi'),

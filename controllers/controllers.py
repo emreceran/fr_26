@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import http
+from odoo import http, fields
 from odoo.http import request
 import hashlib
 import re
@@ -223,7 +223,8 @@ class SahaApi(http.Controller):
 
                 partner.write({
                     'taraf': yazilacak_deger,
-                    'etiketleyen_id': user.id
+                    'etiketleyen_id': user.id,
+                    'etiketleme_zamani': fields.Datetime.now()  # Zaman damgasını buraya çaktık
                 })
                 return {'status': 'success', 'message': 'Guncellendi'}
             else:

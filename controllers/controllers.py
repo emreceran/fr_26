@@ -183,19 +183,11 @@ class SahaApi(http.Controller):
     # -------------------------------------------------------------------------
     @http.route('/api/etiketle', type='json', auth='user', methods=['POST'], csrf=False)
     def etiketle(self, **kwargs):
-        customer_id = kwargs.get("customer_id")
-        renk = kwargs.get("renk")
-        user = request.env.user
-
-        # --- AKTİFLİK KONTROLÜ ---
-        # Ayarlardan etiketleme aktif mi kontrol et
-        etiketleme_aktif = request.env['ir.config_parameter'].sudo().get_param('fr_26.etiketleme_aktif', 'True')
-        
-        if etiketleme_aktif.lower() != 'true':
-            return {
-                'status': 'error',
-                'message': 'Etiketleme şu anda kapalıdır. Lütfen daha sonra tekrar deneyin.'
-            }
+        # --- ETİKETLEME KALICI OLARAK KAPALI ---
+        return {
+            'status': 'error',
+            'message': 'Etiketleme kalıcı olarak kapatılmıştır.'
+        }
 
         try:
             partner = request.env['res.partner'].browse(int(customer_id))
